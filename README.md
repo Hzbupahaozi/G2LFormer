@@ -4,13 +4,11 @@
 ![G2LFormer∂'s architecture](architecture.png)
 
 
-
-
 ### Dependency
 
 * [MMOCR-0.2.0](https://github.com/open-mmlab/mmocr/tree/v0.2.0)
 * [MMDetection-2.11.0](https://github.com/open-mmlab/mmdetection/tree/v2.11.0)
-* [mmcv-full-1.3.4](https://github.com/open-mmlab/mmcv/tree/v1.3.4)
+* [mmcv-full-1.4.0](https://github.com/open-mmlab/mmcv/tree/v1.4.0)
 
 
 
@@ -161,19 +159,10 @@ Models inference.
 
 ## Pretrained Model
 
-The **TableMASTER** (TableMASTER_maxlength_500) pretrained model. In the validation set, the accuracy is **0.7767**.
+The **G2LFormer** pretrained model. In the validation set, the TEDS-S accuracy is **98.61**.
 
-[[Google Drive]](https://drive.google.com/file/d/1LSuVQJ0J8WFtXhLfcCKyzGqcCYmcwEk6/view?usp=sharing)
+[[BaiduYun Drive]](https://pan.baidu.com/s/1q7sfS9ctUhP_kAUxupBRzA?pwd=hzhz)
 
-[[BaiduYun Drive]](https://pan.baidu.com/s/1G2tBpycZY6c6wzfE3V9khw) code:**irp6**
-
-<br/>
-
-The table textline detection model **PSENet** pretrained model. 
-
- [[Google Drive]](https://drive.google.com/file/d/13vni9GH6cxr5jTiOdiRu--Q6AZojB2p2/view?usp=sharing)
-
-[[BaiduYun Drive]](https://pan.baidu.com/s/1fPdkS6iTA8CKmjsQ7noKLw) code:**6b30**
 
 
 <!-- LICENSE -->
