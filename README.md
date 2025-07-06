@@ -65,55 +65,9 @@
    ```
 
 
-
-
-
 <!-- USAGE EXAMPLES -->
 
 ## Usage
-
-### Data preprocess
-
-Run [data_preprocess.py](./table_recognition/data_preprocess.py) to get valid train data. Remember to change the **'raw_img_root'** and **‘save_root’** property of **PubtabnetParser** to your path.
-
-```shell
-python ./table_recognition/data_preprocess.py
-```
-
-It will about 8 hours to finish parsing 500777 train files. After finishing the train set parsing, change the property of **'split'** folder in **PubtabnetParser** to **'val'** and get formatted val data.
-
-Directory structure of parsed train data is :
-
-```shell
-.
-├── StructureLabelAddEmptyBbox_train
-│   ├── PMC1064074_007_00.txt
-│   ├── PMC1064076_003_00.txt
-│   ├── PMC1064076_004_00.txt
-│   └── ...
-├── recognition_train_img
-│   ├── 0
-│       ├── PMC1064100_007_00_0.png
-│       ├── PMC1064100_007_00_10.png
-│       ├── ...
-│       └── PMC1064100_007_00_108.png
-│   ├── 1
-│   ├── ...
-│   └── 15
-├── recognition_train_txt
-│   ├── 0.txt
-│   ├── 1.txt
-│   ├── ...
-│   └── 15.txt
-├── structure_alphabet.txt
-└── textline_recognition_alphabet.txt
-```
-
-We also transfer the raw **Pubtanet** data to **Lmdb** files by the script [lmdb_maker.py](https://github.com/JiaquanYe/TableMASTER-mmocr/blob/master/table_recognition/lmdb_maker.py). 
-
-Click [here](https://pan.baidu.com/s/1X3P2zFpEBN1T_r22l_9zSA) to download the **Pubtanet** data **Lmdb** files (code:uxl1)
-
-If you want to train your model via **Lmdb** files, please take a look at the [TableMASTER lmdb config file](https://github.com/JiaquanYe/TableMASTER-mmocr/blob/master/configs/textrecog/master/table_master_lmdb_ResnetExtract_Ranger_0930.py) and [text-line MASTER lmdb config file](https://github.com/JiaquanYe/TableMASTER-mmocr/blob/master/configs/textrecog/master/master_lmdb_ResnetExtra_tableRec_dataset_dynamic_mmfp16.py)
 
 ### Train
 
@@ -161,7 +115,7 @@ Models inference.
 
 The **G2LFormer** pretrained model. In the validation set, the TEDS-S accuracy is **98.61**.
 
-[[BaiduYun Drive]](https://pan.baidu.com/s/1q7sfS9ctUhP_kAUxupBRzA?pwd=hzhz)
+[[BaiduYun Drive]](https://pan.baidu.com/s/1-36DU8hMT-EcjDVnI9hrgA?pwd=hzhz)
 
 
 
