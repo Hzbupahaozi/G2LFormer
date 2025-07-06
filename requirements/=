@@ -1,0 +1,8 @@
+Defaulting to user installation because normal site-packages is not writeable
+Collecting pytest
+  Downloading pytest-7.4.4-py3-none-any.whl (325 kB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 325.3/325.3 kB 1.2 MB/s eta 0:00:00
+Collecting pytest-cov
+  Downloading pytest_cov-4.1.0-py3-none-any.whl (21 kB)
+Collecting pytest-runner
+  Downloading pytest_runner-6.0.1-py3-none-any.whl (7.2 kB)

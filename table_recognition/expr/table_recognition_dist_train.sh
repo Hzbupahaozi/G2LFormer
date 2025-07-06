@@ -1,0 +1,5 @@
+# CUDA_VISIBLE_DEVICES=0,1,2,3 PORT=29500 ./tools/dist_train.sh ./configs/textrecog/master/table_master_ConcatLayer_ResnetExtract_Ranger_wtw.py   /data/zml/work_dir/test 4
+# CUDA_VISIBLE_DEVICES=2,3 PORT=29501 ./tools/dist_train.sh ./configs/textrecog/master/table_master_ConcatLayer_ResnetExtract_Ranger_huang.py  /data/zml/work_dir/huang/ 2
+# CUDA_VISIBLE_DEVICES=0,1 PORT=29500 ./tools/dist_train.sh  ./configs/textrecog/master/table_master_ConcatLayer_ResnetExtract_Ranger_honor_wuxian.py   ./work_dir_chs_honor_wuxian0126 2
+CUDA_VISIBLE_DEVICES=0 PORT=29500 ./tools/dist_train.sh  ./configs/textrecog/master/table_master_ConcatLayer_ResnetExtract_Ranger_tabrecset.py   ./work_dir_chs_tabrecset0613 1
+# CUDA_VISIBLE_DEVICES=2,3 PORT=29500 ./tools/dist_train.sh  ./configs/textrecog/master/table_master_ConcatLayer_ResnetExtract_Ranger_hwl.py   ./work_dir_chs_hwl0121 2

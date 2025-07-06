@@ -1,0 +1,15 @@
+imgaug
+kwarray
+lanms-neo
+lmdb
+matplotlib
+mmcv
+Polygon3
+pyclipper
+rapidfuzz
+scikit-image
+scipy
+shapely
+titlecase
+torch
+torchvision

@@ -1,0 +1,4 @@
+# ninja log v5
+0	3442	1703066711250072241	/home/zhuomingli/code/TableMASTER-mmocr/mmocr/models/textrecog/recognizer/Deformable-DETR/models/ops/build/temp.linux-x86_64-cpython-37/home/zhuomingli/code/TableMASTER-mmocr/mmocr/models/textrecog/recognizer/Deformable-DETR/models/ops/src/cpu/ms_deform_attn_cpu.o	ba6b31dbda07f42a
+0	12027	1703066719826037076	/home/zhuomingli/code/TableMASTER-mmocr/mmocr/models/textrecog/recognizer/Deformable-DETR/models/ops/build/temp.linux-x86_64-cpython-37/home/zhuomingli/code/TableMASTER-mmocr/mmocr/models/textrecog/recognizer/Deformable-DETR/models/ops/src/cuda/ms_deform_attn_cuda.o	ecc2032dca67352a
+0	16331	1703066724130019571	/home/zhuomingli/code/TableMASTER-mmocr/mmocr/models/textrecog/recognizer/Deformable-DETR/models/ops/build/temp.linux-x86_64-cpython-37/home/zhuomingli/code/TableMASTER-mmocr/mmocr/models/textrecog/recognizer/Deformable-DETR/models/ops/src/vision.o	e0adbff60d1160a1
