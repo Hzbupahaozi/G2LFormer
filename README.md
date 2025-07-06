@@ -104,7 +104,7 @@
 
 ## Pretrained Model
 
-The **G2LFormer** pretrained model. In the validation set, the TEDS-S accuracy is **98.61**.
+The **G2LFormer** pretrained model using PubTabNet dataset. In the validation set, the TEDS-S accuracy is **98.61**.
 
 [[BaiduYun Drive]](https://pan.baidu.com/s/1-36DU8hMT-EcjDVnI9hrgA?pwd=hzhz)
 
