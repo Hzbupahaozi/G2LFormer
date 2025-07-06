@@ -71,17 +71,13 @@
 
 ### Train
 
- Train table structure recognition model, with **TableMASTER**.
+ Train table structure recognition model, with **G2LFormer**.
 
    ```shell
    sh ./table_recognition/expr/table_recognition_dist_train.sh
    ```
 
 ### Inference
-
-To get final results, firstly, we need to forward the three up-mentioned models, respectively. Secondly, we merge the results by our matching algorithm, to generate the final HTML code.
-
-Models inference. 
 
    ```shell
    python ./table_recognition/table_inference_chs_{name of dataset}.py
@@ -95,16 +91,11 @@ Models inference.
    pip install -r ./table_recognition/PubTabNet-master/src/requirements.txt
    ```
 
-2. Get **gtVal.json**.
+
+2. Calcutate TEDS score. Before run this script, modify pred file path and gt file path in [generate_teds_score.py](./table_recognition/PubTabNet-master/src/generate_teds_score.py)
 
    ```shell
-   python ./table_recognition/get_val_gt.py
-   ```
-
-3. Calcutate TEDS score. Before run this script, modify pred file path and gt file path in [mmocr_teds_acc_mp.py](./table_recognition/PubTabNet-master/src/mmocr_teds_acc_mp.py)
-
-   ```shell
-   python ./table_recognition/PubTabNet-master/src/mmocr_teds_acc_mp.py
+   python ./table_recognition/PubTabNet-master/src/generate_teds_score.py
    ```
 
 
