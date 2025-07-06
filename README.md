@@ -1,7 +1,7 @@
   <h1 align="left">G2LFormer</h1>
 
 
-![MASTER's architecture](./imgs/architecture.jpg)
+![G2LFormer∂'s architecture](G2LFormer.png)
 
 
 
