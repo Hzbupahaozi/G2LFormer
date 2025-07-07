@@ -94,7 +94,8 @@ Before run this script, modify file path in [__init__.py](./mmocr/models/textrec
    ```
 
 
-2. Calcutate TEDS score. Before run this script, modify pred file path and gt file path in [generate_teds_score.py](./table_recognition/PubTabNet-master/src/generate_teds_score.py) for dataset TAL/WTW and path in [generate_teds_score_train.py](./table_recognition/PubTabNet-master/src/generate_teds_score_train.py) for dataset PubTabNet/TabRecSet.
+2. Calcutate TEDS score.
+Before run this script, modify pred file path and gt file path in [generate_teds_score.py](./table_recognition/PubTabNet-master/src/generate_teds_score.py) for dataset TAL/WTW and path in [generate_teds_score_train.py](./table_recognition/PubTabNet-master/src/generate_teds_score_train.py) for dataset PubTabNet/TabRecSet.
 
    ```shell
    python ./table_recognition/PubTabNet-master/src/generate_teds_score.py
