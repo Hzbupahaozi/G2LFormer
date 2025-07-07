@@ -62,35 +62,18 @@ class Structure_Recognition(Inference):
         pred = pred[0]
         return pred
 
-    # 这里卓明师兄也修改了
     def predict_single_file(self, file_path):
-        # numpy inference
-        # img = imread(file_path)
-        # file_name = os.path.basename(file_path)
-        # result = model_inference(self.model, [img], batch_mode=True)
-        # result = self.result_format(result, file_path)
-        # result_dict = {file_name:result}
-        # return result, result_dict
 
-        
         filename = file_path.split('/')[-1].replace("jpg","txt")
-        # print("config:",self.config_file)
 
-        # with open("/data/zml/mmocr_WTW_recognition/StructureLabelAddEmptyBbox_test/"+"table_spider_00496_0.txt", 'r', encoding='UTF-8') as f:
         with open("/home/chs/tablemaster-mmocr/"+"0fd3e7468e95b12a0084e357b3ce8795.txt", 'r', encoding='UTF-8') as f:
             lines = f.readlines()
 
-        # print(lines[1])
         lines  = lines[1].split('\n')[0]
-        # lines = None
         img = imread(file_path)
-        # print("img_path:",file_path)
-        # print("img.shape:",img.shape)
         file_name = os.path.basename(file_path)
         result = model_inference(self.model, [img], lines,batch_mode=True)
-        # print("table:",result)
         result = self.result_format(result, file_path)
-        # print(result)
         result_dict = {file_name:result}
         return result, result_dict
 
@@ -169,7 +152,7 @@ if __name__ == '__main__':
     cfg = {
         'structure_master_config': '/home/chs/tablemaster-mmocr/configs/textrecog/master/table_master_ConcatLayer_ResnetExtract_Ranger_hwl.py',
         'structure_master_ckpt': '/home/chs/tablemaster-mmocr/work_dir_chs_hwl0307/epoch_60.pth',
-        'structure_master_result_folder': '/home/chs/tablemaster-mmocr/work_dir_chs_hwl0307/results_60_0613',
+        'structure_master_result_folder': '/home/chs/tablemaster-mmocr/work_dir_chs_hwl0307/results_60',
         'test_folder': '/data/chs/hwl/val',
     }
 
