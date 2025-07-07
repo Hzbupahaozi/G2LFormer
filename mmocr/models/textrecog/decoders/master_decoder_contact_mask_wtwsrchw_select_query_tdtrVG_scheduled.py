@@ -89,7 +89,6 @@ def self_attention(query, key, value, mask=None, dropout=None):
         score = score.masked_fill(mask == 0, -6.55e4) # for fp16
      
     p_attn = F.softmax(score, dim=-1)
-    # print("p_attn:",p_attn.shape)
     if dropout is not None:
         p_attn = dropout(p_attn)
     t = torch.matmul(p_attn, value)
@@ -637,46 +636,6 @@ class TableMasterDecoder(BaseDecoder):
                         new_reference_points = bbox_output[..., :self.query_dim]#.sigmoid() 
                         reference_points1 = new_reference_points.detach()
 
-        # print("bboxmask:",bbox_masks.shape,tgt_mask.shape)
-        # bbox_masks = bbox_masks.unsqueeze(1).unsqueeze(-1)   #test
-        # # bbox_masks = bbox_masks[:,:-1].unsqueeze(1).unsqueeze(-1)
-        # # print("bboxmask1:",bbox_masks.shape,tgt_mask.shape)
-        # bbox_masks = bbox_masks.repeat(1,1,1,tgt_mask.shape[3]).to(feat.device)
-        # # print("bboxmask2:",bbox_masks.shape,tgt_mask.shape)
-        # bbox_masks = tgt_mask & bbox_masks
-        # bbox_masks =tgt_mask
-        # print("bboxmask3:",bbox_masks.shape)
-       
-            # bbox_output = bbox_output.sigmoid() 
-        # bbox_output = inverse_sigmoid(bbox_output)
-        # print(ref_points[0][:,:40])
-        #     if self.return_intermediate:        #zhongjian jieguo
-        #         intermediate.append(self.norm(output))
-        # if self.norm is not None:
-        #     output = self.norm(output)
-        #     if self.return_intermediate:
-        #         intermediate.pop()
-                # intermediate.append(output)
-        # reference_before_sigmoid = inverse_sigmoid(new_reference_points)
-        # print(reference_before_sigmoid[:,:20])
-        # print(new_reference_points[:,:20])
-        # bbox_output = new_reference_points
-        # bbox_output[:,:,0] = bbox_output[:,:,0] +bbox_output[:,:,2]/2
-        # bbox_output[:,:,1] = bbox_output[:,:,1] +bbox_output[:,:,3]/2
-        # bbox_output = None
-        # pos_sine_embed = gen_sineembed_for_position(bbox_output)
-        # bbox_pos = self.ref_point_head(pos_sine_embed)
-        # if self.return_intermediate:
-        #     if self.bbox_embed is not None:
-        #         return [
-        #             torch.stack(intermediate).transpose(1, 2),
-        #             torch.stack(ref_points).transpose(1, 2),
-        #         ]
-        #     else:
-        #         return [
-        #             torch.stack(intermediate).transpose(1, 2), 
-        #             reference_points.unsqueeze(0).transpose(1, 2)
-        #         ]
 
         return self.cls_fc(cls_x), output_list, dn_out
 
@@ -969,28 +928,22 @@ class TableMasterConcatDecoder(BaseDecoder):
         tgt_mask = trg_pad_mask & trg_sub_mask
         ##############################################下面是local attention的设计
         tensors = tgt_mask.clone().detach()
-        matrix1 = tensors[:, 0]  # 选择所有的[499,499]矩阵
+        matrix1 = tensors[:, 0]  
 
-        # 找到每一列是否全为1的布尔掩码
-        mask = torch.any(matrix1 == 1, dim=1)  # mask形状为[3, 499]
+        mask = torch.any(matrix1 == 1, dim=1)  
 
-        # 找到所有需要修改的列索引
         for i in range(matrix1.shape[0]):  # 对每个张量单独操作
             for col in range(matrix1.shape[2]):
                 if mask[i, col]:
-                    # 将当前列设置为0
                     matrix1[i, :, col] = 0
-                    # 从col开始的w列设置为1
                     end_idx = min(col + 350, matrix1.shape[1])
                     matrix1[i, col:end_idx, col] = 1
 
         tgt_mask = tgt_mask * tensors       
-        # print("tgt_mask:",tgt_mask)
         return None, tgt_mask, td_pad_mask, tr_pad_mask
 
     def decode(self, input, feature_select,td_masks,tr_masks, feat, feature, src_mask, src_mask_origin, tgt_mask, bbox_expand = None, bbox_masks =None):
-        # main process of transformer decoder.
-        # print("input.shape:",input.shape)
+
         x = self.embedding(input)
         x = self.pos_target(x)
         pos = self.positional_encoding(feat)    # 这里的feat是[3,512,30,30]然后pos是[1,30,30,512]
@@ -1030,49 +983,35 @@ class TableMasterConcatDecoder(BaseDecoder):
         td_masks = td_masks.unsqueeze(-1).expand_as(cls_x)
         tr_masks = tr_masks.unsqueeze(-1).expand_as(cls_x)
 
-        # 这个mask应该是进入卷积层之前乘还是卷积层之后乘？
         col_query = self.visual_linear_col(cls_x)
         col_query = col_query*td_masks
         row_query = self.visual_linear_row(cls_x)
         row_query = row_query*td_masks
         tr_query = self.visual_linear_tr(cls_x)
         tr_query = tr_query*tr_masks
-        # print("output",output.shape)
         
         # bbox head
         if(bbox_masks==None):
             return self.cls_fc(cls_x),None,None,None,None,None
-        # print("bboxmask:",bbox_masks.shape)
-        # bbox_masks = bbox_masks[:,:-1].cuda()  #1026
+
         bbox_masks = bbox_masks[:,1:].cuda()  #1031
         bbox_masks = bbox_masks.unsqueeze(dim=1).unsqueeze(dim=1)
         bbox_masks = bbox_masks.repeat(1,1,499,1)
-        ########################################################################
         w = 350
 
         matrix = bbox_masks[:, 0]  
 
-        # 找到每一列是否全为1的布尔掩码
         mask = torch.all(matrix == 1, dim=1)  
 
-        # 找到所有需要修改的列索引
         for i in range(matrix.shape[0]):  # 对每个张量单独操作
             for col in range(matrix.shape[2]):
                 if mask[i, col]:
-                    # 将当前列设置为0
                     matrix[i, :, col] = 0
-                    # 从col开始的w列设置为1
                     end_idx = min(col + w, matrix.shape[1])
                     matrix[i, col:end_idx, col] = 1
-        ########################################################################
-        # print("bboxmask:",bbox_masks.shape)
-        # print(bbox_masks[0,0,0])
-        # print(tgt_mask)
+
         for layer in self.bbox_one:
-            # x = layer(x = x, feature=feature, tgt_mask=tgt_mask,            #1107
-            #                src_mask=src_mask,
-            #                pos=None, query_pos=None, query_sine_embed=None,
-            #               )
+
             x,att_map = layer(x = x, feature=feature, tgt_mask=bbox_masks,            #1105
                            src_mask=src_mask,
                            pos=None, query_pos=None, query_sine_embed=None,
@@ -1118,15 +1057,11 @@ class TableMasterConcatDecoder(BaseDecoder):
 
             for i in range(bbox_expand.shape[0]):
                 bbox_1 = bbox_x.clone()
-                # print("bbox:", bbox_expand.shape,i)
                 reference_points1  = bbox_expand[i,:,:-1, :self.query_dim].sigmoid()    # [3,599,4]
                 for layer_id, layer in enumerate(self.bbox_layer):
                     obj_center = reference_points1[..., :self.query_dim]     # [num_queries, batch_size, 4]取前2维，作为左上锚点[3,599,4]
-                    # get sine embedding for the query vector
                     query_sine_embed = gen_sineembed_for_position(obj_center)   # [3,599,1024]
                     query_pos = self.ref_point_head(query_sine_embed)   # [3,599,512]
-                    # print("query_pos:",query_pos.shape)
-                    # For the first decoder layer, we do not apply transformation over p_s
                     if self.query_scale_type != 'fix_elewise':
                         if layer_id == 0:
                             pos_transformation = 1
@@ -1136,7 +1071,6 @@ class TableMasterConcatDecoder(BaseDecoder):
                     else:
                         pos_transformation = self.query_scale.weight[layer_id]
 
-                    # apply transformation
 
                     query_sine_embed = query_sine_embed[...,:self.d_model] * pos_transformation #[3,599,512]
 
@@ -1206,9 +1140,6 @@ class TableMasterConcatDecoder(BaseDecoder):
                         )
             att_list.append(att_map)
             
-        # ref_points.append(new_reference_points)
-        #     update
-        #update
             if self.bbox_embed  is not None:
                 # if self.bbox_embed_diff_each_layer:
                 #     tmp = self.bbox_fc[layer_id](output)
@@ -1228,11 +1159,9 @@ class TableMasterConcatDecoder(BaseDecoder):
                 reference_points = new_reference_points.detach()
         
         
-        # cls_x = None
-        # print("decode:",att_map.shape)
+
         return self.cls_fc(cls_x), output_list, (cls_dn_out,dn_out), col_query, row_query, tr_query   # tr也有视觉损失
-        # return self.cls_fc(cls_x), output_list, (cls_dn_out,dn_out), col_query, row_query
-        # return self.cls_fc(cls_x), output_list, (cls_dn_out,dn_out) # 推理的时候使用tuili
+        # return self.cls_fc(cls_x), output_list, (cls_dn_out,dn_out) # 推理的时候使用
     
 
     def greedy_forward(self, SOS, feature_select, feat, feature, src_mask =None, src_mask_origin=None, img_metas =None ):
@@ -1264,10 +1193,7 @@ class TableMasterConcatDecoder(BaseDecoder):
                 else:   bbox_mask  = torch.LongTensor([0]).byte().unsqueeze(0)
             bbox_masks = torch.cat([bbox_masks, bbox_mask], dim=1)
                 
-            #point
-            # print(len(bbox_output))       
-            # bbox = bbox_output[2][:, -1].unsqueeze(1)
-            # bbox_list = torch.cat([bbox_list, bbox], dim=1)
+
             input = torch.cat([input, next_word[:, -1].unsqueeze(-1)], dim=1)
         # print("intput:",input)
         out, bbox_output,dn = self.decode(input[:,:-1], feature_select, td_pad_mask, tr_pad_mask, feat, feature, src_mask, src_mask_origin, target_mask,bbox_masks=bbox_masks)
@@ -1275,12 +1201,7 @@ class TableMasterConcatDecoder(BaseDecoder):
         
         return output, bbox_output
     def forward_train(self, feature_select,scheduled_prob, feat, out_enc, targets_dict, src_mask, src_mask_origin, img_metas=None):
-        # x is token of label
-        # feat is feature after backbone before pe.
-        # out_enc is feature after pe.
-      
-        # D = torch.distributions.Categorical(probs=data.adj)
-        #     sample = D.sample(sample_shape=[20])
+
         device = feat.device
         if isinstance(targets_dict, dict):
             padded_targets = targets_dict['padded_targets'].to(device)
@@ -1288,39 +1209,22 @@ class TableMasterConcatDecoder(BaseDecoder):
             padded_targets = targets_dict.to(device)
         
         bbox_list = targets_dict["bbox"].to(device)
-        # scalar = 2
-        # known_bboxs = bbox_list.repeat(scalar,1,1, 1)
-        # print("img_metas",img_metas[0]["filename"])
-        # print(img_metas)
+
         target = targets_dict["targets"]
 
-        #####################################################重新修改过的dn
+
         # 原本的dn
         known_labels_expaned, known_bbox_expand = prepare_for_dn(self.num_classes-3,padded_targets[:, :-1],bbox_list,targets_dict,label_noise_scale=0.1,box_noise_scale= 0.25,scalar= 2)
-        # known_labels_expaed[2,3,599] padded_targets[:,:-1] [3,599]
         bbox_expand = known_bbox_expand
 
       
-        # print("bbox_masks:",targets_dict["bbox_masks"])
-       
-        # src_mask = None
-        # 为了在<tr>和</tr>token中加入东西
-        # tr_masks = [img_metas[0]['tr_masks'],img_metas[1]['tr_masks'],img_metas[2]['tr_masks']]
         _, tgt_mask, td_masks, tr_masks = self.make_mask(out_enc, padded_targets[:,:-1])#pad_target
 
         # 为了加上scheduled sampling
         out, out_bbox, dn_out, col_query, row_query, tr_query =  self.decode(padded_targets[:, :-1], feature_select,td_masks,tr_masks, feat, out_enc, src_mask, src_mask_origin, tgt_mask, (known_labels_expaned,bbox_expand), targets_dict["bbox_masks"])
-        # ############################### gumbel softmax
-        # gumbel_noise = -torch.log(-torch.log(torch.rand_like(out) + 1e-10) + 1e-10)  # 生成 Gumbel 噪声
-        # gumbel_logits = 10 * out + gumbel_noise  # 缩放 logits
-        # gumbel_softmax_weights = F.softmax(gumbel_logits, dim=-1)  # 计算 Softmax 概率
-        # new_embeddings = torch.matmul(gumbel_softmax_weights, self.embedding.lut.weight)
-        # second_output,_,_,_,_,_=self.decode(padded_targets[:, :-1], feature_select,td_masks,tr_masks, feat, out_enc, src_mask, src_mask_origin, tgt_mask,new_embeddings, (known_labels_expaned,bbox_expand), targets_dict["bbox_masks"])#
-        # ################################
 
         pred_idxs = self.tensor2idx_train(out)
         scheduled_prob = 0.1
-        # max_replace_len = max(len(pred_idx) for pred_idx in pred_idxs)
         replacement_value=padded_targets[:,1:].clone().detach()
         for i, lst in enumerate(pred_idxs):
             replacement_value[i,:len(lst)] = torch.tensor(lst)
@@ -1330,7 +1234,6 @@ class TableMasterConcatDecoder(BaseDecoder):
         _, tgt_mask2, _, _ = self.make_mask(out_enc, padded_targets2[:,:-1])#pad_target
         
         second_output,_,_,_,_,_=self.decode(padded_targets2[:, :-1], feature_select,td_masks,tr_masks, feat, out_enc, src_mask, src_mask_origin, tgt_mask2, (known_labels_expaned,bbox_expand),bbox_masks=None)#
-        # return self.cls_fc(cls_x), output_list, (cls_dn_out,dn_out), col_query, row_query, tr_query
         return second_output, out_bbox, dn_out, col_query, row_query, tr_query
 
     def tensor2idx_train(self, outputs, img_metas=None):
@@ -1351,10 +1254,6 @@ class TableMasterConcatDecoder(BaseDecoder):
         for idx in range(batch_size):
             seq = outputs[idx, :, :]
             seq = seq.softmax(-1)   # 原本使用的是softmax
-            # U = torch.rand_like(seq)    # 修改为Gumbel softmax
-            # G = -torch.log(-torch.log(U))
-            # noisy_seq = (seq+G) / temperature
-            # seq = torch.softmax(noisy_seq, -1)
             max_value, max_idx = torch.max(seq, -1)
             str_index = []
             output_index = max_idx.cpu().detach().numpy().tolist()
@@ -1371,15 +1270,13 @@ class TableMasterConcatDecoder(BaseDecoder):
     def forward_test(self, feature_select, feat, out_enc, targets_dict, src_mask, src_mask_origin, img_metas):
         # src_mask = None
         batch_size = out_enc.shape[0]
-        # print("target:",targets_dict)
-        # bbox_masks = targets_dict["bbox_masks"]
+
         SOS = torch.zeros(batch_size).long().to(out_enc.device)
         SOS[:] = self.SOS
         SOS = SOS.unsqueeze(1)
         # print("s:",src_mask)
         output, bbox_output = self.greedy_forward(SOS, feature_select, feat, out_enc, src_mask, src_mask_origin, img_metas=img_metas )
-        # print("len:",len(bbox_output))
-        # print("out:",output,bbox_output)
+
         return output, bbox_output
 
     def forward(self,
