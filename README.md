@@ -71,13 +71,15 @@
 
 ### Train
 
- Train table structure recognition model, with **G2LFormer**.
+ Train table structure recognition model, with **G2LFormer**. Before run this script, modify file path in [__init__.py](./mmocr/models/textrecog/decoders/__init__.py) with xxxx_scheduled.py
 
    ```shell
    sh ./table_recognition/expr/table_recognition_dist_train.sh
    ```
 
 ### Inference
+
+Before run this script, modify file path in [__init__.py](./mmocr/models/textrecog/decoders/__init__.py) without xxxx_scheduled.py
 
    ```shell
    python ./table_recognition/table_inference_chs_{name of dataset}.py
